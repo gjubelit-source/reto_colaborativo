@@ -12,19 +12,31 @@ import com.example.reto_colaborativo.databinding.ActivityMainBinding
 import com.example.reto_colaborativo.modelos.LoginRequest
 import com.example.reto_colaborativo.red.RetrofitClient
 import kotlinx.coroutines.launch
-import kotlin.io.root
+
 
 class MainActivity : AppCompatActivity() {
     private var token: String? = null   // aquí guardaremos la "manilla"
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
+    companion object {
+        const val DATOS = "MisDatos"
+        const val KEY_USER_NAME = "username"
+        const val KEY_PASSWORD = "password"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnLogin.setOnClickListener {
+        val username = binding.edtName.text.toString()
+        val password = binding.edtPassword.text.toString()
+        val mostrar = binding.edtMostrar.text.toString()
 
-        hacerLogin("emilys", "emilyspass")
+
+        val usernameGuardado=sharedPreferences.getString(KEY_USER_NAME,"")
+        val passwordGuardado=sharedPreferences.getString(KEY_PASSWORD,"")
+        }
     }
 
     // ---------- PASO A: POST de login ----------
