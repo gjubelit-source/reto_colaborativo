@@ -1,5 +1,6 @@
 package com.example.reto_colaborativo
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -20,22 +21,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     companion object {
         const val DATOS = "MisDatos"
-        const val KEY_USER_NAME = "username"
-        const val KEY_PASSWORD = "password"
+        const val KEY_ACCESS_TOKEN = "username"
+        const val KEY_REFRESH_TOKEN = "password"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        sharedPreferences = getSharedPreferences(com.example.reto_colaborativo.MainActivity.Companion.DATOS, Context.MODE_PRIVATE)
 
         binding.btnLogin.setOnClickListener {
         val username = binding.edtName.text.toString()
         val password = binding.edtPassword.text.toString()
-        val mostrar = binding.edtMostrar.text.toString()
 
-
-        val usernameGuardado=sharedPreferences.getString(KEY_USER_NAME,"")
-        val passwordGuardado=sharedPreferences.getString(KEY_PASSWORD,"")
         }
     }
 
