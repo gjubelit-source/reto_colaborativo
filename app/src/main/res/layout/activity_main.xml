@@ -63,9 +63,13 @@
 
     <TextView
         android:id="@+id/edtMostrar"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:lineSpacingExtra="4dp"
+        android:text="Ingresa tus datos para continuar"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

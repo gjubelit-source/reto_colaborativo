@@ -16,28 +16,33 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
-    private var token: String? = null   // aquí guardaremos la "manilla"
+    private var token: String? = null
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
     companion object {
         const val DATOS = "MisDatos"
-        const val KEY_ACCESS_TOKEN = "username"
-        const val KEY_REFRESH_TOKEN = "password"
+        const val KEY_ACCESS_TOKEN = "access_token"
+        const val KEY_REFRESH_TOKEN = "refresh_token"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPreferences = getSharedPreferences(com.example.reto_colaborativo.MainActivity.Companion.DATOS, Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(DATOS, Context.MODE_PRIVATE)
+
+        token = sharedPreferences.getString(KEY_ACCESS_TOKEN, null)
+        if (token != null) {
+            obtenerUsuario()
+        }
 
         binding.btnLogin.setOnClickListener {
         val username = binding.edtName.text.toString().trim()
         val password = binding.edtPassword.text.toString().trim()
             if(username.isEmpty()){
-                binding.edtName.error = "..."
+                binding.edtName.error = "El usuario es obligatorio"
             }
             if (password.isEmpty()){
-                binding.edtPassword.error = "..."
+                binding.edtPassword.error = "La contraseña es obligatoria"
             }
             if (username.isEmpty() || password.isEmpty()){
                 return@setOnClickListener
@@ -46,40 +51,55 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ---------- PASO A: POST de login ----------
     private fun hacerLogin(usuario: String, clave: String) {
-        // lifecycleScope.launch = ejecuta en una corrutina (sin congelar la app)
         lifecycleScope.launch {
             try {
                 val resp = RetrofitClient.api.login(
                     LoginRequest(usuario, clave)
                 )
                 if (resp.isSuccessful) {
-                    token = resp.body()?.accessToken   // ← guardamos el token
+                    val datos = resp.body()
+                    token = datos?.accessToken
                     Log.d("API", "Token recibido: $token")
-                    obtenerUsuario()                  // seguimos al GET
+
+                    sharedPreferences.edit()
+                        .putString(KEY_ACCESS_TOKEN, datos?.accessToken)
+                        .putString(KEY_REFRESH_TOKEN, datos?.refreshToken)
+                        .apply()
+
+                    binding.edtMostrar.text = "Sesión iniciada, cargando datos..."
+                    obtenerUsuario()
                 } else {
                     Log.e("API", "Login falló: ${resp.code()}")
+                    binding.edtMostrar.text = "Usuario o contraseña incorrectos (${resp.code()})"
                 }
             } catch (e: Exception) {
                 Log.e("API", "Error de red: ${e.message}")
+                binding.edtMostrar.text = "Error de red: ${e.message}"
             }
         }
     }
 
-    // ---------- PASO B: GET protegido con el token ----------
     private fun obtenerUsuario() {
-        val t = token ?: return              // si no hay token, no seguimos
+        val t = token ?: return
         lifecycleScope.launch {
             try {
-                // ojo: el formato es "Bearer " + token
                 val resp = RetrofitClient.api.getCurrentUser("Bearer $t")
                 if (resp.isSuccessful) {
                     val user = resp.body()
                     Log.d("API", "Hola ${user?.firstName} - ${user?.email}")
+                    binding.edtMostrar.text = """
+                        Hola, ${user?.firstName} ${user?.lastName}
+                        Usuario: ${user?.username}
+                        Correo: ${user?.email}
+                    """.trimIndent()
+                } else {
+                    Log.e("API", "No se pudieron traer los datos: ${resp.code()}")
+                    binding.edtMostrar.text = "No se pudieron traer los datos (${resp.code()})"
                 }
             } catch (e: Exception) {
                 Log.e("API", "Error: ${e.message}")
+                binding.edtMostrar.text = "Error de red: ${e.message}"
             }
         }
     }
