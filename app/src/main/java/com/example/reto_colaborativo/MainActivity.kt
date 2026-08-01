@@ -1,5 +1,6 @@
 package com.example.reto_colaborativo
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -11,13 +12,17 @@ import com.example.reto_colaborativo.databinding.ActivityMainBinding
 import com.example.reto_colaborativo.modelos.LoginRequest
 import com.example.reto_colaborativo.red.RetrofitClient
 import kotlinx.coroutines.launch
+import kotlin.io.root
 
 class MainActivity : AppCompatActivity() {
     private var token: String? = null   // aquí guardaremos la "manilla"
-
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         hacerLogin("emilys", "emilyspass")
     }
