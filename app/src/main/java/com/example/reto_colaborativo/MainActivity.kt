@@ -31,9 +31,18 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(com.example.reto_colaborativo.MainActivity.Companion.DATOS, Context.MODE_PRIVATE)
 
         binding.btnLogin.setOnClickListener {
-        val username = binding.edtName.text.toString()
-        val password = binding.edtPassword.text.toString()
-
+        val username = binding.edtName.text.toString().trim()
+        val password = binding.edtPassword.text.toString().trim()
+            if(username.isEmpty()){
+                binding.edtName.error = "..."
+            }
+            if (password.isEmpty()){
+                binding.edtPassword.error = "..."
+            }
+            if (username.isEmpty() || password.isEmpty()){
+                return@setOnClickListener
+            }
+                hacerLogin(username, password)
         }
     }
 
