@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -72,10 +73,20 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Log.e("API", "Login falló: ${resp.code()}")
                     binding.edtMostrar.text = "Usuario o contraseña incorrectos (${resp.code()})"
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Login fallido: usuario o contraseña incorrectos",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } catch (e: Exception) {
                 Log.e("API", "Error de red: ${e.message}")
                 binding.edtMostrar.text = "Error de red: ${e.message}"
+                Toast.makeText(
+                    this@MainActivity,
+                    "No se pudo conectar con el servidor",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
